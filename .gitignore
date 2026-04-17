@@ -1,10 +1,7 @@
-.DS_Store
-.vscode/
-*.log
-__pycache__/
-*.pyc
 node_modules/
 docs/
 *.png
 *.jpg
 *.docx
+.DS_Store
+.vscode/
