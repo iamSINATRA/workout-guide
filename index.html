@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Workout Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #0e1015;
+    --bg2:    #161820;
+    --bg3:    #1e2028;
+    --border: rgba(255,255,255,0.08);
+    --text:   #e8e9ec;
+    --muted:  #7a7d8a;
+    --accent: #f0c040;
+
+    --mon:  #1F3864;
+    --tue:  #1A6B4B;
+    --wed:  #1565A0;
+    --thu:  #7B1F3B;
+    --fri:  #5B3A8A;
+    --sun:  #444650;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.5;
+    padding-bottom: 80px; /* space for bottom nav */
+  }
+
+  /* ── BOTTOM TAB NAV ── */
+  .tab-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px 8px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .tab-btn .icon { font-size: 20px; line-height: 1; }
+
+  .tab-btn.active {
+    color: var(--accent);
+  }
+
+  /* ── TABS / SCREENS ── */
+  .screen {
+    display: none;
+    padding: 0 0 24px;
+  }
+
+  .screen.active { display: block; }
+
+  /* ── HERO HEADER ── */
+  .hero {
+    background: linear-gradient(180deg, #111318 0%, var(--bg) 100%);
+    padding: 32px 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .hero-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  .stat-box {
+    background: var(--bg2);
+    padding: 12px 8px 10px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  /* ── ALERT ── */
+  .alert {
+    margin: 16px 16px 0;
+    background: rgba(31, 14, 14, 0.9);
+    border: 1px solid rgba(220, 60, 60, 0.35);
+    border-left: 4px solid #dc3c3c;
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+
+  .alert-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #f06060;
+    margin-bottom: 10px;
+  }
+
+  .alert ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+
+  .alert li {
+    padding-left: 16px;
+    position: relative;
+    color: #d0b0b0;
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+
+  .alert li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #dc3c3c;
+  }
+
+  /* ── WEEK GRID ── */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    padding: 16px;
+  }
+
+  .week-day {
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .week-day:active { opacity: 0.7; }
+
+  .week-day-top {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 2px 4px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .week-day-body {
+    background: var(--bg3);
+    padding: 6px 3px 8px;
+    font-size: 10px;
+    line-height: 1.25;
+    color: var(--muted);
+    text-align: center;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.05em;
+    color: #fff;
+    padding: 24px 16px 12px;
+    line-height: 1;
+  }
+
+  /* ── DAY ACCORDION ── */
+  .day-card { border-bottom: 1px solid var(--border); }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .day-header-left { display: flex; flex-direction: column; gap: 1px; }
+
+  .day-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .day-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .day-chevron {
+    font-size: 12px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .day-card.open .day-chevron { transform: rotate(180deg); }
+
+  .day-body {
+    display: none;
+    padding: 0 16px 20px;
+  }
+
+  .day-card.open .day-body { display: block; }
+
+  .day-note {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 0 0 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .day-narrative {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 4px 0 8px;
+  }
+
+  /* ── EXERCISE CARD ── */
+  .ex-card {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .ex-card:last-child { border-bottom: none; }
+
+  .ex-img-wrap {
+    flex-shrink: 0;
+    width: 90px;
+    height: 72px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+
+  .ex-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  .ex-img-wrap .no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    opacity: 0.25;
+  }
+
+  .ex-info { flex: 1; min-width: 0; }
+
+  .ex-name {
+    font-weight: 600;
+    font-size: 15.5px;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+
+  .ex-sets {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+
+  .ex-cue {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── NUTRITION ── */
+  .macros-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 16px;
+  }
+
+  .macro-box {
+    background: var(--bg2);
+    padding: 16px 16px 12px;
+  }
+
+  .macro-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .macro-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .eating-window {
+    background: var(--bg3);
+    border-left: 3px solid var(--accent);
+    padding: 14px 16px;
+    margin: 0 16px 16px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .eating-window-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .eating-window p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .meal-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    margin: 0 16px 10px;
+  }
+
+  .meal-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .meal-card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+  .meal-card li {
+    font-size: 14.5px;
+    color: var(--text);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.35;
+  }
+
+  .meal-card li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+  }
+
+  .rules-card {
+    margin: 0 16px 10px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .rules-card li {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14.5px;
+    color: var(--text);
+    list-style: none;
+    line-height: 1.4;
+  }
+
+  .rules-card li:last-child { border-bottom: none; }
+
+  /* ── BACK PROTOCOL ── */
+  .protocol-section {
+    padding: 0 16px;
+  }
+
+  .protocol-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 16px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .protocol-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .protocol-item:last-child { border-bottom: none; }
+
+  .protocol-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  .protocol-note {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .protocol-sets {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    white-space: nowrap;
+    padding-top: 3px;
+  }
+
+  /* ── DAY SELECTOR (Nutrition) ── */
+  .day-selector {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    padding: 16px 16px 8px;
+  }
+
+  .day-pill {
+    border: none;
+    border-radius: 4px;
+    padding: 8px 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    background: var(--bg3);
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .day-pill.active {
+    background: var(--accent);
+    color: #000;
+  }
+
+  /* ── MEAL DAY SETS ── */
+  .meal-day-set { display: none; }
+  .meal-day-set.active { display: block; }
+
+  /* ── RECIPE CARD ── */
+  .recipe-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 0 16px 10px;
+    overflow: hidden;
+  }
+
+  .recipe-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    background: var(--bg3);
+  }
+
+  .recipe-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .recipe-header-left { display: flex; flex-direction: column; gap: 2px; }
+
+  .recipe-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .recipe-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .recipe-chevron {
+    font-size: 12px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+
+  .recipe-card.open .recipe-chevron { transform: rotate(180deg); }
+
+  .recipe-body {
+    display: none;
+    padding: 0 14px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .recipe-card.open .recipe-body { display: block; }
+
+  .recipe-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 0 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .recipe-body ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+
+  .recipe-body ul li {
+    font-size: 14px;
+    color: var(--text);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.35;
+  }
+
+  .recipe-body ul li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+  }
+
+  .recipe-body ol {
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .recipe-body ol li {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  /* ── GROCERY ── */
+  .grocery-section { padding: 0 16px 8px; }
+
+  .grocery-cat-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    padding: 20px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .grocery-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s;
+  }
+
+  .grocery-item:last-child { border-bottom: none; }
+
+  .grocery-item.checked { opacity: 0.3; text-decoration: line-through; }
+
+  .cb {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--muted);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .grocery-item.checked .cb {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .grocery-item.checked .cb::after {
+    content: '✓';
+    font-size: 13px;
+    color: #000;
+    font-weight: bold;
+  }
+
+  .grocery-item span { font-size: 15px; color: var(--text); line-height: 1.3; }
+
+  /* ── UTILITY ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ TRAINING SCREEN ══════════════ -->
+<div class="screen active" id="screen-training">
+
+  <div class="hero">
+    <div class="hero-label">Personalized Training System</div>
+    <h1>Workout &<br>Nutrition<br>Guide</h1>
+    <div class="hero-sub">Back-Safe Training · Mediterranean Nutrition · 16:8 IF</div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Days Active</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">2</div>
+        <div class="stat-label">Swim Sessions</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">4</div>
+        <div class="stat-label">Gym Days</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">16:8</div>
+        <div class="stat-label">Fasting</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert">
+    <div class="alert-title">⚠ Lower Back Rules — Read First</div>
+    <ul>
+      <li>No barbell back squats or conventional deadlifts</li>
+      <li>All dumbbell work seated or supported — never standing under load with free spine</li>
+      <li>5-min core activation warm-up before every session: dead bug + bird-dog + glute bridge</li>
+      <li>Brace core on every rep — treat your trunk like a lifting belt</li>
+      <li>STOP IMMEDIATELY if lower back recruits. No pushing through it.</li>
+    </ul>
+  </div>
+
+  <div class="week-grid">
+    <div class="week-day" onclick="openDay('monday')">
+      <div class="week-day-top" style="background:#1F3864">MON</div>
+      <div class="week-day-body">Chest + Core</div>
+    </div>
+    <div class="week-day" onclick="openDay('tuesday')">
+      <div class="week-day-top" style="background:#1A6B4B">TUE</div>
+      <div class="week-day-body">Legs Q&amp;G</div>
+    </div>
+    <div class="week-day" onclick="openDay('wednesday')">
+      <div class="week-day-top" style="background:#1565A0">WED</div>
+      <div class="week-day-body">Swim</div>
+    </div>
+    <div class="week-day" onclick="openDay('thursday')">
+      <div class="week-day-top" style="background:#7B1F3B">THU</div>
+      <div class="week-day-body">Arms + Shoulders</div>
+    </div>
+    <div class="week-day" onclick="openDay('friday')">
+      <div class="week-day-top" style="background:#5B3A8A">FRI</div>
+      <div class="week-day-body">Legs Post.</div>
+    </div>
+    <div class="week-day" onclick="openDay('saturday')">
+      <div class="week-day-top" style="background:#1565A0">SAT</div>
+      <div class="week-day-body">Swim Long</div>
+    </div>
+    <div class="week-day" onclick="openDay('sunday')">
+      <div class="week-day-top" style="background:#444650">SUN</div>
+      <div class="week-day-body">Recovery</div>
+    </div>
+  </div>
+
+  <!-- MONDAY -->
+  <div class="day-card" id="monday">
+    <div class="day-header" style="border-left: 4px solid #1F3864" onclick="toggleDay('monday')">
+      <div class="day-header-left">
+        <span class="day-label">Monday</span>
+        <span class="day-title">Chest + Core</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-note">Core activation warm-up (5 min) before lifting.</div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/0/8/2/3/20823.gif" alt="Incline Dumbbell Press" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Incline Dumbbell Press</div>
+          <div class="ex-sets">4 × 10–12</div>
+          <div class="ex-cue">Controlled range, back flat to bench, no shoulder impingement</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/1/8/4/2/3/18423.gif" alt="Cable Chest Fly" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Cable Chest Fly (Low Pulley)</div>
+          <div class="ex-sets">3 × 12–15</div>
+          <div class="ex-cue">Arms slightly bent, squeeze chest at center, constant tension</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/5/3/1/3/5313.gif" alt="Machine Chest Press" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Machine Chest Press</div>
+          <div class="ex-sets">3 × 10–12</div>
+          <div class="ex-cue">Seat height so handles at mid-chest, back fully supported</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/1/0/0/8/3/10083.gif" alt="Push-Ups" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Push-Ups</div>
+          <div class="ex-sets">3 × max</div>
+          <div class="ex-cue">Straight body line, don't let hips sag</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/0/8/3/5/20835.gif" alt="Dead Bug" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Dead Bug</div>
+          <div class="ex-sets">3 × 10/side</div>
+          <div class="ex-cue">Lower back FLAT on floor the entire time — non-negotiable</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/4/3/0/3/24303.gif" alt="Forearm Plank" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Forearm Plank</div>
+          <div class="ex-sets">3 × 30–45s</div>
+          <div class="ex-cue">Neutral spine, glutes squeezed, breathe steadily</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUESDAY -->
+  <div class="day-card" id="tuesday">
+    <div class="day-header" style="border-left: 4px solid #1A6B4B" onclick="toggleDay('tuesday')">
+      <div class="day-header-left">
+        <span class="day-label">Tuesday</span>
+        <span class="day-title">Legs: Quad &amp; Glute</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-note">Core activation warm-up (5 min). Focus on controlled range — these muscles are being rebuilt from scratch.</div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/1/2/6/7/1/12671.gif" alt="Leg Press" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Leg Press (Machine)</div>
+          <div class="ex-sets">4 × 12–15</div>
+          <div class="ex-cue">Feet mid-plate shoulder-width, never let lower back peel off pad</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/1/0/2/8/3/10283.gif" alt="Goblet Squat" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Goblet Squat</div>
+          <div class="ex-sets">3 × 12</div>
+          <div class="ex-cue">DB at chest, sit back and down, torso upright, knees track over toes</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/5/3/2/2/5322.gif" alt="Leg Extension" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Seated Leg Extension</div>
+          <div class="ex-sets">3 × 15</div>
+          <div class="ex-cue">Full range, pause at top, slow lower</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/7/4/5/3/27453.gif" alt="Lying Leg Curl" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Lying Leg Curl</div>
+          <div class="ex-sets">3 × 12</div>
+          <div class="ex-cue">Hips stay on pad, slow eccentric</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/5/7/6/1/5761.gif" alt="Hip Thrust" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Hip Thrust (Bench)</div>
+          <div class="ex-sets">3 × 15</div>
+          <div class="ex-cue">Upper back on bench edge, drive through heels, squeeze glutes 1 sec at top</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/4/0/4/3/24043.gif" alt="Calf Raise" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Standing Calf Raise</div>
+          <div class="ex-sets">3 × 20</div>
+          <div class="ex-cue">Heel below platform, full extension at top</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEDNESDAY -->
+  <div class="day-card" id="wednesday">
+    <div class="day-header" style="border-left: 4px solid #1565A0" onclick="toggleDay('wednesday')">
+      <div class="day-header-left">
+        <span class="day-label">Wednesday</span>
+        <span class="day-title">Swim</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-narrative">
+        <p>30–45 minutes of lap swimming.</p>
+        <p>Mix freestyle and backstroke. Backstroke decompresses the lumbar spine and opens the thoracic region. On high back-sensitivity days, use a pull buoy for the entire session to keep all rotation gentle.</p>
+        <p><strong>This session is cardio, active recovery, and back therapy simultaneously. Don't skip it.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- THURSDAY -->
+  <div class="day-card" id="thursday">
+    <div class="day-header" style="border-left: 4px solid #7B1F3B" onclick="toggleDay('thursday')">
+      <div class="day-header-left">
+        <span class="day-label">Thursday</span>
+        <span class="day-title">Biceps + Shoulders + Core</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-note">Core activation warm-up (5 min). All curls are SEATED — eliminates temptation to swing through the lower back.</div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/7/2/9/2/7292.gif" alt="Seated Dumbbell Curl" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Seated Dumbbell Curl</div>
+          <div class="ex-sets">4 × 12</div>
+          <div class="ex-cue">SEATED eliminates back stress, full range, don't swing</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/0/8/2/1/20821.gif" alt="Cable Hammer Curl" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Cable Hammer Curl</div>
+          <div class="ex-sets">3 × 12</div>
+          <div class="ex-cue">Neutral grip, elbows pinned at sides</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/1/9/2/9/21929.gif" alt="Machine Preacher Curl" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Machine Preacher Curl</div>
+          <div class="ex-sets">3 × 10–12</div>
+          <div class="ex-cue">Arms fully supported, don't hyperextend at bottom</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/5/1/3/7/5137.gif" alt="Seated Lateral Raise" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Seated Lateral Raise (Light)</div>
+          <div class="ex-sets">3 × 15</div>
+          <div class="ex-cue">Lead with elbows, raise to shoulder height only</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/4/9/7/4/24974.gif" alt="Cable Face Pull" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Cable Face Pull</div>
+          <div class="ex-sets">3 × 15</div>
+          <div class="ex-cue">Cable at face height, elbows FLARED HIGH AND WIDE — this is not a row</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/0/8/2/4/20824.gif" alt="Bird-Dog" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Bird-Dog</div>
+          <div class="ex-sets">3 × 10/side</div>
+          <div class="ex-cue">Opposite arm and leg, spine neutral, hold 2 sec, no rotation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRIDAY -->
+  <div class="day-card" id="friday">
+    <div class="day-header" style="border-left: 4px solid #5B3A8A" onclick="toggleDay('friday')">
+      <div class="day-header-left">
+        <span class="day-label">Friday</span>
+        <span class="day-title">Legs: Posterior Chain</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-note">Core activation warm-up (5 min). RDL weights LIGHT — hinge pattern, not a strength test. Technique first.</div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/7/6/4/2/7642.gif" alt="Romanian Deadlift" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Romanian Deadlift (Light DBs)</div>
+          <div class="ex-sets">3 × 10</div>
+          <div class="ex-cue">Hinge at HIPS not waist, DBs close to legs, stop at hamstring stretch</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/5/5/2/4/5524.gif" alt="Step-Ups" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Step-Ups (Box or Bench)</div>
+          <div class="ex-sets">3 × 12/leg</div>
+          <div class="ex-cue">Drive through heel of elevated foot, don't push off back foot</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/2/9/0/2/3/29023.gif" alt="Reverse Lunge" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Reverse Lunge</div>
+          <div class="ex-sets">3 × 10/leg</div>
+          <div class="ex-cue">Step BACK, front knee tracks over toes, torso upright</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/1/0/4/8/2/10482.gif" alt="Seated Leg Curl" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Seated Leg Curl</div>
+          <div class="ex-sets">3 × 15</div>
+          <div class="ex-cue">Full range, pause at full flexion, controlled return</div>
+        </div>
+      </div>
+
+      <div class="ex-card">
+        <div class="ex-img-wrap">
+          <img src="https://gymvisual.com/img/p/1/4/1/1/9/14119.gif" alt="Glute Bridge" loading="lazy">
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">Glute Bridge (Bodyweight)</div>
+          <div class="ex-sets">3 × 20</div>
+          <div class="ex-cue">Feet flat, drive hips up, squeeze glutes 1 full second at top</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SATURDAY -->
+  <div class="day-card" id="saturday">
+    <div class="day-header" style="border-left: 4px solid #1565A0" onclick="toggleDay('saturday')">
+      <div class="day-header-left">
+        <span class="day-label">Saturday</span>
+        <span class="day-title">Swim — Longer Session</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-narrative">
+        <p>45–60 minutes. Kick sets, pull buoy intervals, or technique drills. Work on breathing rhythm and stroke mechanics. Water aerobics or aqua jogging for variety while staying gentle on the spine.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUNDAY -->
+  <div class="day-card" id="sunday">
+    <div class="day-header" style="border-left: 4px solid #444650" onclick="toggleDay('sunday')">
+      <div class="day-header-left">
+        <span class="day-label">Sunday</span>
+        <span class="day-title">Active Recovery</span>
+      </div>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="day-narrative">
+        <p>20–30 minute walk, light stretching, or yoga. Focus on hip flexors, hamstrings, and thoracic rotation. Move, but don't load.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /screen-training -->
+
+
+<!-- ══════════════ NUTRITION SCREEN ══════════════ -->
+<div class="screen" id="screen-nutrition">
+
+  <div class="hero">
+    <div class="hero-label">Mediterranean · 16:8 IF</div>
+    <h1>Nutrition<br>Plan</h1>
+    <div class="hero-sub">Eating window: 12:00 PM – 8:00 PM</div>
+  </div>
+
+  <div class="macros-row">
+    <div class="macro-box">
+      <div class="macro-value">170g+</div>
+      <div class="macro-label">Protein / Day</div>
+    </div>
+    <div class="macro-box">
+      <div class="macro-value">&lt;80g</div>
+      <div class="macro-label">Net Carbs / Day</div>
+    </div>
+    <div class="macro-box">
+      <div class="macro-value">35g+</div>
+      <div class="macro-label">Fiber / Day</div>
+    </div>
+    <div class="macro-box">
+      <div class="macro-value">&lt;25g</div>
+      <div class="macro-label">Added Sugar / Day</div>
+    </div>
+  </div>
+
+  <div class="eating-window">
+    <div class="eating-window-time">12:00 PM – 8:00 PM · 16:8 Intermittent Fasting</div>
+    <p>Growth hormone peaks during the fast, insulin stays low. Breaking fast at noon keeps the morning productive and simplifies meal timing around training.</p>
+  </div>
+
+  <!-- Day selector pills -->
+  <div class="day-selector">
+    <button class="day-pill" style="background:var(--mon)" onclick="switchDay(0,this)">MON</button>
+    <button class="day-pill" style="background:var(--tue)" onclick="switchDay(1,this)">TUE</button>
+    <button class="day-pill" style="background:var(--wed)" onclick="switchDay(2,this)">WED</button>
+    <button class="day-pill" style="background:var(--thu)" onclick="switchDay(3,this)">THU</button>
+    <button class="day-pill" style="background:var(--fri)" onclick="switchDay(4,this)">FRI</button>
+    <button class="day-pill" style="background:#2a4a1a" onclick="switchDay(5,this)">SAT</button>
+    <button class="day-pill" style="background:var(--sun)" onclick="switchDay(6,this)">SUN</button>
+  </div>
+
+  <!-- ── MONDAY ── -->
+  <div class="meal-day-set" id="meal-day-0">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Egg &amp; Avocado Scramble</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>3 large eggs + 2 egg whites</li>
+          <li>1 ripe avocado, sliced</li>
+          <li>½ cup cherry tomatoes, halved</li>
+          <li>1 tbsp olive oil</li>
+          <li>Salt, pepper, red pepper flakes, squeeze of lemon</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Heat olive oil in a non-stick pan over medium heat.</li>
+          <li>Whisk eggs and egg whites together; season with salt and pepper.</li>
+          <li>Pour into pan and stir gently with a spatula until just set, 2–3 min.</li>
+          <li>Plate eggs alongside sliced avocado and cherry tomatoes.</li>
+          <li>Finish with red pepper flakes and a squeeze of lemon.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Grilled Chicken Arugula Salad</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz chicken breast</li>
+          <li>2 cups arugula</li>
+          <li>¼ cup Kalamata olives</li>
+          <li>½ cup roasted red peppers, sliced</li>
+          <li>¼ red onion, thinly sliced</li>
+          <li>2 tbsp olive oil, 1 tbsp red wine vinegar, 1 tsp Dijon mustard</li>
+          <li>Salt, pepper, dried oregano</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Season chicken with salt, pepper, and dried oregano.</li>
+          <li>Grill or pan-sear over medium-high heat, 5–6 min per side until cooked through.</li>
+          <li>Let rest 5 min, then slice.</li>
+          <li>Toss arugula, olives, peppers, and red onion in a bowl.</li>
+          <li>Whisk olive oil, vinegar, and Dijon; drizzle over salad.</li>
+          <li>Top with sliced chicken and serve.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Herb-Crusted Salmon + Broccoli + White Beans</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>8 oz salmon fillet</li>
+          <li>2 cups broccoli florets</li>
+          <li>½ cup canned white beans, drained</li>
+          <li>2 tbsp olive oil</li>
+          <li>2 cloves garlic, minced</li>
+          <li>Fresh dill, parsley, lemon zest, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Preheat oven to 400°F. Line a sheet pan with foil.</li>
+          <li>Mix olive oil, garlic, dill, parsley, and lemon zest; rub over salmon.</li>
+          <li>Toss broccoli in olive oil, salt, and pepper; spread on pan alongside salmon.</li>
+          <li>Roast 12–15 min until salmon is flaky and broccoli is tender.</li>
+          <li>Warm white beans in a small pan with olive oil and a pinch of salt.</li>
+          <li>Plate salmon over white beans with broccoli on the side.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">Greek Yogurt + Blueberries</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>1 cup plain full-fat Greek yogurt</li>
+          <li>½ cup fresh blueberries</li>
+          <li>Pinch of cinnamon (optional)</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Scoop yogurt into a bowl.</li>
+          <li>Top with blueberries.</li>
+          <li>Dust with cinnamon if desired. Serve cold.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-0 MON -->
+
+  <!-- ── TUESDAY ── -->
+  <div class="meal-day-set" id="meal-day-1">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Shrimp &amp; Avocado Plate</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz raw shrimp, peeled and deveined</li>
+          <li>1 ripe avocado, sliced</li>
+          <li>½ cup cucumber, sliced</li>
+          <li>1 tbsp olive oil</li>
+          <li>Lemon juice, salt, pepper, garlic powder</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Pat shrimp dry; season with salt, pepper, and garlic powder.</li>
+          <li>Heat olive oil in a pan over medium-high heat.</li>
+          <li>Cook shrimp 2 min per side until pink and opaque.</li>
+          <li>Arrange shrimp alongside sliced avocado and cucumber.</li>
+          <li>Drizzle with lemon juice and a little olive oil.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Shrimp &amp; Spinach + Chickpeas</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz raw shrimp, peeled</li>
+          <li>2 cups baby spinach</li>
+          <li>½ cup canned chickpeas, drained</li>
+          <li>2 cloves garlic, minced</li>
+          <li>1 tbsp olive oil</li>
+          <li>Lemon juice, red pepper flakes, salt</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Heat olive oil in a large pan over medium heat.</li>
+          <li>Add garlic and red pepper flakes; sauté 1 min.</li>
+          <li>Add shrimp; cook 2 min per side until pink. Remove and set aside.</li>
+          <li>Add spinach and chickpeas; toss until spinach wilts, about 2 min.</li>
+          <li>Return shrimp to pan; squeeze lemon juice over everything and toss.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Ground Turkey &amp; Zucchini Skillet</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>8 oz lean ground turkey</li>
+          <li>2 medium zucchini, diced</li>
+          <li>½ cup cherry tomatoes, halved</li>
+          <li>1 red onion, diced</li>
+          <li>2 cloves garlic, minced</li>
+          <li>1 tbsp olive oil</li>
+          <li>Dried oregano, cumin, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Heat olive oil in a skillet over medium-high heat.</li>
+          <li>Add onion and garlic; sauté 2–3 min until softened.</li>
+          <li>Add turkey; brown 5–6 min, breaking it up, until cooked through.</li>
+          <li>Stir in zucchini, tomatoes, oregano, and cumin.</li>
+          <li>Cook 4–5 min more until zucchini is tender. Season and serve.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">Hard-Boiled Eggs + Almonds</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>2 large eggs</li>
+          <li>¼ cup raw almonds</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Place eggs in a pot; cover with cold water by 1 inch.</li>
+          <li>Bring to a boil; cover, remove from heat, and let sit 10–12 min.</li>
+          <li>Transfer to ice water for 5 min. Peel and serve alongside almonds.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-1 TUE -->
+
+  <!-- ── WEDNESDAY ── -->
+  <div class="meal-day-set" id="meal-day-2">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Yogurt Parfait + Walnuts</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>1 cup plain full-fat Greek yogurt</li>
+          <li>¼ cup walnuts, roughly chopped</li>
+          <li>½ cup blueberries</li>
+          <li>1 tbsp chia seeds</li>
+          <li>½ avocado, sliced (daily non-negotiable)</li>
+          <li>Cinnamon</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Spoon half the yogurt into a glass or bowl.</li>
+          <li>Layer on half the berries and walnuts.</li>
+          <li>Add remaining yogurt, top with remaining berries, walnuts, and chia seeds.</li>
+          <li>Dust with cinnamon.</li>
+          <li>Serve alongside sliced avocado.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Grilled Salmon &amp; Olive Bowl</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz salmon fillet</li>
+          <li>2 cups mixed greens</li>
+          <li>¼ cup Kalamata olives, halved</li>
+          <li>½ cup cucumber, diced</li>
+          <li>¼ cup roasted red peppers, sliced</li>
+          <li>2 tbsp olive oil, 1 tbsp lemon juice, salt, pepper, dried thyme</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Season salmon with salt, pepper, and dried thyme.</li>
+          <li>Grill or pan-sear 4–5 min per side until flaky.</li>
+          <li>Arrange greens, olives, cucumber, and peppers in a bowl.</li>
+          <li>Flake salmon over the top.</li>
+          <li>Whisk olive oil and lemon juice; drizzle over bowl and serve.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Baked Chicken Thighs + Asparagus + Lentils</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>2 bone-in skin-on chicken thighs</li>
+          <li>1 bunch asparagus, trimmed</li>
+          <li>½ cup canned green lentils, drained</li>
+          <li>2 tbsp olive oil</li>
+          <li>Garlic powder, dried rosemary, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Preheat oven to 425°F.</li>
+          <li>Rub chicken thighs with olive oil, garlic powder, rosemary, salt, and pepper.</li>
+          <li>Roast chicken on a sheet pan for 20 min.</li>
+          <li>Add asparagus (drizzled with olive oil) to pan; roast 12–15 min more until chicken is golden (165°F internal).</li>
+          <li>Warm lentils in a small pan with olive oil and a pinch of salt.</li>
+          <li>Plate chicken over lentils with asparagus on the side.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">String Cheese + Walnuts</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>2 sticks string cheese</li>
+          <li>¼ cup walnuts</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Peel string cheese into strips.</li>
+          <li>Serve alongside walnuts. No cooking needed.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-2 WED -->
+
+  <!-- ── THURSDAY ── -->
+  <div class="meal-day-set" id="meal-day-3">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Shakshuka + Avocado</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>3 large eggs</li>
+          <li>1 can (14 oz) crushed tomatoes</li>
+          <li>1 ripe avocado, sliced</li>
+          <li>½ red onion, diced</li>
+          <li>2 cloves garlic, minced</li>
+          <li>1 tsp cumin, 1 tsp paprika, pinch of cayenne</li>
+          <li>1 tbsp olive oil, salt, pepper, fresh parsley</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Heat olive oil in an oven-safe skillet over medium heat.</li>
+          <li>Sauté onion 3 min; add garlic, cumin, paprika, and cayenne; cook 1 min.</li>
+          <li>Pour in crushed tomatoes; season with salt and pepper; simmer 5–7 min.</li>
+          <li>Make 3 wells in sauce; crack an egg into each well.</li>
+          <li>Cover and cook 5–7 min until whites are set and yolks are runny.</li>
+          <li>Garnish with parsley; serve with sliced avocado on the side.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Salmon &amp; Arugula Bowl</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz salmon fillet</li>
+          <li>2 cups arugula</li>
+          <li>¼ cup Kalamata olives</li>
+          <li>½ cup cherry tomatoes, halved</li>
+          <li>¼ red onion, thinly sliced</li>
+          <li>2 tbsp olive oil, 1 tbsp red wine vinegar, 1 tsp Dijon, fresh dill</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Season salmon with salt, pepper, and fresh dill.</li>
+          <li>Pan-sear in olive oil over medium-high heat, 4–5 min per side.</li>
+          <li>Let cool slightly, then flake into chunks.</li>
+          <li>Combine arugula, olives, tomatoes, and red onion.</li>
+          <li>Dress with olive oil, red wine vinegar, and Dijon; top with flaked salmon.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Shrimp Stir-fry + Broccoli + Quinoa</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>8 oz raw shrimp, peeled</li>
+          <li>2 cups broccoli florets</li>
+          <li>½ cup dry quinoa (cook per package → ~1 cup cooked)</li>
+          <li>2 cloves garlic, minced</li>
+          <li>1 tbsp olive oil</li>
+          <li>1 tbsp low-sodium soy sauce, few drops sesame oil, red pepper flakes</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Cook quinoa per package directions; set aside.</li>
+          <li>Heat olive oil in a wok or large pan over high heat.</li>
+          <li>Add garlic and broccoli; stir-fry 3–4 min until bright green.</li>
+          <li>Add shrimp; cook 2 min per side until pink.</li>
+          <li>Drizzle soy sauce and sesame oil; toss everything together.</li>
+          <li>Serve over quinoa with red pepper flakes.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">Protein Shake</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>1 scoop whey or casein protein powder (&lt;5g sugar per serving)</li>
+          <li>8–10 oz cold water or unsweetened almond milk</li>
+          <li>Ice (optional)</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Add liquid to shaker cup.</li>
+          <li>Add protein powder.</li>
+          <li>Shake vigorously 20–30 seconds. Add ice if desired.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-3 THU -->
+
+  <!-- ── FRIDAY ── -->
+  <div class="meal-day-set" id="meal-day-4">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Sautéed Shrimp &amp; Avocado Plate</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz raw shrimp, peeled and deveined</li>
+          <li>1 ripe avocado, sliced</li>
+          <li>1 cup baby spinach</li>
+          <li>1 tbsp olive oil</li>
+          <li>1 clove garlic, minced; lemon juice; paprika; salt; pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Season shrimp with paprika, salt, pepper, and minced garlic.</li>
+          <li>Heat olive oil in a skillet over medium-high heat.</li>
+          <li>Cook shrimp 2 min per side until pink. Remove from heat.</li>
+          <li>Place spinach on plate; top with shrimp and avocado slices.</li>
+          <li>Squeeze lemon juice over everything and serve.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Chicken Salad (no croutons)</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz grilled chicken breast, sliced</li>
+          <li>2 cups romaine lettuce, chopped</li>
+          <li>½ cup cherry tomatoes</li>
+          <li>½ cup cucumber, sliced</li>
+          <li>¼ cup Kalamata olives</li>
+          <li>2 tbsp olive oil, 1 tbsp red wine vinegar, dried oregano, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Season and grill or pan-sear chicken breast 5–6 min per side; rest and slice.</li>
+          <li>Combine romaine, tomatoes, cucumber, and olives in a bowl.</li>
+          <li>Whisk olive oil, vinegar, oregano, salt, and pepper.</li>
+          <li>Drizzle dressing over salad and toss.</li>
+          <li>Top with sliced chicken and serve.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Sea Bass + Roasted Eggplant + White Beans</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>8 oz sea bass fillet</li>
+          <li>1 medium eggplant, cubed</li>
+          <li>½ cup canned white beans, drained</li>
+          <li>3 tbsp olive oil</li>
+          <li>2 cloves garlic, minced</li>
+          <li>Dried thyme, lemon zest, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Preheat oven to 425°F.</li>
+          <li>Toss eggplant cubes in 2 tbsp olive oil, salt, pepper, and thyme; roast 20–25 min, flipping halfway.</li>
+          <li>Season sea bass with salt, pepper, and lemon zest.</li>
+          <li>Sear in 1 tbsp olive oil over medium-high heat, 4 min per side.</li>
+          <li>Warm white beans with garlic in a small pan.</li>
+          <li>Plate sea bass over white beans with roasted eggplant on the side.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">Greek Yogurt + Strawberries</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>1 cup plain full-fat Greek yogurt</li>
+          <li>½ cup fresh strawberries, sliced</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Spoon yogurt into a bowl.</li>
+          <li>Top with sliced strawberries and serve cold.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-4 FRI -->
+
+  <!-- ── SATURDAY ── -->
+  <div class="meal-day-set" id="meal-day-5">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Mediterranean Frittata</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>4 large eggs + 2 egg whites</li>
+          <li>¼ cup roasted red peppers, diced</li>
+          <li>¼ cup Kalamata olives, sliced</li>
+          <li>1 handful baby spinach</li>
+          <li>1 tbsp olive oil</li>
+          <li>Salt, pepper, dried oregano</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Preheat oven to 375°F.</li>
+          <li>Whisk eggs and egg whites with salt, pepper, and oregano.</li>
+          <li>Heat olive oil in an oven-safe skillet over medium heat.</li>
+          <li>Sauté spinach 1 min until wilted; add peppers and olives.</li>
+          <li>Pour egg mixture over vegetables; cook on stovetop 2 min until edges set.</li>
+          <li>Transfer to oven; bake 8–10 min until puffed and set in the center.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Grilled Shrimp &amp; Avocado Bowl</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz raw shrimp, peeled</li>
+          <li>1 ripe avocado, sliced</li>
+          <li>2 cups mixed greens</li>
+          <li>½ cup cherry tomatoes</li>
+          <li>2 tbsp olive oil, 1 tbsp lemon juice</li>
+          <li>1 clove garlic, minced; paprika; salt; pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Toss shrimp in olive oil, garlic, paprika, salt, and pepper.</li>
+          <li>Grill or pan-sear 2 min per side until pink.</li>
+          <li>Arrange greens, avocado, and tomatoes in a bowl.</li>
+          <li>Top with shrimp; drizzle with lemon juice and olive oil.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Slow-Roasted Salmon + Asparagus + Lentils</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>8 oz salmon fillet</li>
+          <li>1 bunch asparagus, trimmed</li>
+          <li>½ cup canned green lentils, drained</li>
+          <li>3 tbsp olive oil</li>
+          <li>1 lemon (juice + zest), fresh dill, garlic, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Preheat oven to 275°F.</li>
+          <li>Rub salmon with 1 tbsp olive oil, lemon zest, dill, salt, and pepper.</li>
+          <li>Roast salmon 25–30 min until just translucent in the center.</li>
+          <li>Meanwhile, toss asparagus in olive oil; roast at 425°F for 12 min in a separate pan.</li>
+          <li>Warm lentils with garlic and olive oil in a small saucepan.</li>
+          <li>Plate salmon over lentils with asparagus. Squeeze lemon over all.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">Almonds + String Cheese</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>¼ cup raw almonds</li>
+          <li>2 sticks string cheese</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>No prep needed. Serve almonds and string cheese together.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-5 SAT -->
+
+  <!-- ── SUNDAY ── -->
+  <div class="meal-day-set" id="meal-day-6">
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 1 — 12:00 PM · Break Fast</div>
+          <div class="recipe-title">Egg White Omelette + Spinach</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>5 egg whites + 1 whole egg</li>
+          <li>1 cup baby spinach</li>
+          <li>¼ cup roasted red peppers, diced</li>
+          <li>½ avocado, sliced (daily non-negotiable)</li>
+          <li>1 tbsp olive oil, salt, pepper, garlic powder</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Whisk egg whites and whole egg with salt, pepper, and garlic powder.</li>
+          <li>Heat olive oil in a non-stick pan over medium heat.</li>
+          <li>Add spinach; sauté until wilted, 1–2 min. Add peppers; stir briefly.</li>
+          <li>Pour egg mixture over vegetables.</li>
+          <li>Fold omelette in half once edges are set; cook 1 min more.</li>
+          <li>Serve hot alongside sliced avocado.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 2 — 3:00 PM</div>
+          <div class="recipe-title">Chicken &amp; Chickpea Salad</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>6 oz grilled chicken breast, sliced</li>
+          <li>½ cup canned chickpeas, drained</li>
+          <li>2 cups arugula</li>
+          <li>½ cup cucumber, diced</li>
+          <li>¼ red onion, thinly sliced</li>
+          <li>2 tbsp olive oil, 1 tbsp lemon juice, 1 tsp Dijon, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Season and grill chicken 5–6 min per side; rest and slice.</li>
+          <li>Combine chickpeas, arugula, cucumber, and red onion in a bowl.</li>
+          <li>Whisk olive oil, lemon juice, and Dijon; season with salt and pepper.</li>
+          <li>Pour dressing over salad and toss.</li>
+          <li>Top with sliced chicken and serve.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Meal 3 — 6:30 PM · Largest Meal</div>
+          <div class="recipe-title">Herb-Roasted Chicken + Cauliflower + Chickpeas</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>2 bone-in chicken thighs or 1 large breast</li>
+          <li>2 cups cauliflower florets</li>
+          <li>½ cup canned chickpeas, drained and rinsed</li>
+          <li>3 tbsp olive oil</li>
+          <li>2 cloves garlic, minced</li>
+          <li>Dried rosemary, thyme, paprika, salt, pepper</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Preheat oven to 425°F.</li>
+          <li>Rub chicken with 1 tbsp olive oil, garlic, rosemary, thyme, paprika, salt, and pepper.</li>
+          <li>Toss cauliflower and chickpeas in remaining 2 tbsp olive oil with salt and pepper; spread on sheet pan.</li>
+          <li>Nestle chicken on top of vegetables.</li>
+          <li>Roast 25–30 min until chicken is golden (165°F internal) and cauliflower is caramelized.</li>
+          <li>Rest 5 min before serving.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="recipe-card" onclick="toggleRecipe(this)">
+      <div class="recipe-header">
+        <div class="recipe-header-left">
+          <div class="recipe-label">Snack — Between Meals</div>
+          <div class="recipe-title">Hard-Boiled Eggs + Walnuts</div>
+        </div>
+        <span class="recipe-chevron">▼</span>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section-label">Ingredients</div>
+        <ul>
+          <li>2 large eggs</li>
+          <li>¼ cup walnuts</li>
+        </ul>
+        <div class="recipe-section-label">Steps</div>
+        <ol>
+          <li>Place eggs in a pot; cover with cold water by 1 inch.</li>
+          <li>Bring to a boil; cover, remove from heat, and let sit 10–12 min.</li>
+          <li>Transfer to ice water for 5 min. Peel and serve alongside walnuts.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /meal-day-6 SUN -->
+
+  <div class="section-title" style="font-size:24px; padding-top:16px;">Rules</div>
+  <ul class="rules-card">
+    <li>Avocado: 1 daily — full stop. Healthy fats + fiber + satiety, no debate.</li>
+    <li>AVOID: white bread, pasta, regular rice, fruit juice, cream sauces, fried food</li>
+    <li>Water: 80–100 oz minimum daily — track it</li>
+    <li>Electrolyte packet (zero sugar — LMNT or Liquid IV Zero) daily during fast</li>
+    <li>Coffee and green tea fine during fast — no cream or sugar</li>
+  </ul>
+
+  <div class="section-title" style="font-size:24px; padding-top:16px;">Back Protocol</div>
+
+  <div class="protocol-section">
+    <div class="protocol-label">Pre-Workout Activation</div>
+
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Dead Bug</div>
+        <div class="protocol-note">Lower back flat on floor — always</div>
+      </div>
+      <div class="protocol-sets">2 × 10/side</div>
+    </div>
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Bird-Dog</div>
+        <div class="protocol-note">Hold 2 seconds, spine neutral</div>
+      </div>
+      <div class="protocol-sets">2 × 8/side</div>
+    </div>
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Glute Bridge</div>
+        <div class="protocol-note">Squeeze glutes at top, pause</div>
+      </div>
+      <div class="protocol-sets">2 × 15</div>
+    </div>
+
+    <div class="protocol-label">Post-Workout Cooldown</div>
+
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Hip Flexor Stretch</div>
+        <div class="protocol-note">Lunge position, sink hips forward</div>
+      </div>
+      <div class="protocol-sets">45 sec/side</div>
+    </div>
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Piriformis Stretch (Figure-4)</div>
+        <div class="protocol-note">Lying on back, cross ankle over opposite knee</div>
+      </div>
+      <div class="protocol-sets">45 sec/side</div>
+    </div>
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Child's Pose</div>
+        <div class="protocol-note">Arms extended, breathe into low back</div>
+      </div>
+      <div class="protocol-sets">60 sec</div>
+    </div>
+    <div class="protocol-item">
+      <div>
+        <div class="protocol-name">Cat-Cow</div>
+        <div class="protocol-note">Slow and controlled, full range</div>
+      </div>
+      <div class="protocol-sets">10 reps</div>
+    </div>
+  </div>
+
+</div><!-- /screen-nutrition -->
+
+
+<!-- ══════════════ GROCERY SCREEN ══════════════ -->
+<div class="screen" id="screen-grocery">
+
+  <div class="hero">
+    <div class="hero-label">Weekly Shopping</div>
+    <h1>Grocery<br>List</h1>
+    <div class="hero-sub">Tap items to check off as you shop</div>
+  </div>
+
+  <div class="grocery-section">
+
+    <div class="grocery-cat-title">Proteins</div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Chicken breast (2–3 lbs) — boneless skinless, buy in bulk</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Salmon fillets (1.5–2 lbs) — wild-caught preferred</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Shrimp (1 lb, raw, peeled)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Canned tuna in olive oil (4–6 cans)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Lean ground turkey (1 lb)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Eggs (2 dozen)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Greek yogurt, plain full-fat (32 oz tub)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Whey or casein protein powder (&lt;5g sugar/serving)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>String cheese or part-skim mozzarella</span></div>
+
+    <div class="grocery-cat-title">Produce</div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Avocados (7–10) — one per day</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Baby spinach (large bag)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Arugula (bag)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Cherry tomatoes (2 pints)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>English cucumber (2)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Broccoli (2 heads or bag of florets)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Asparagus (2 bundles)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Zucchini (3–4)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Eggplant (1–2)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Red onion (2)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Garlic (1 head)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Lemons (4–6)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Blueberries or strawberries (1–2 pints)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Cauliflower (1 head)</span></div>
+
+    <div class="grocery-cat-title">Pantry / Fats / Oils</div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Extra virgin olive oil (large bottle)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Kalamata olives (jar)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Raw almonds or walnuts (bag)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Red wine vinegar</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Dijon mustard</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Canned chickpeas (3–4 cans)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Canned white beans (2–3 cans)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Quinoa (small bag — training days only)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Roasted red peppers (jar)</span></div>
+
+    <div class="grocery-cat-title">Herbs &amp; Spices</div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Sea salt + black pepper</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Dried oregano, thyme, rosemary</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Smoked paprika</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Cumin</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Fresh parsley or basil (bunch)</span></div>
+
+    <div class="grocery-cat-title">Hydration / Electrolytes</div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Electrolyte packets, no sugar (LMNT or Liquid IV Zero)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Sparkling water (case)</span></div>
+    <div class="grocery-item" onclick="toggleCheck(this)"><span class="cb"></span><span>Black coffee or green tea</span></div>
+
+  </div>
+</div><!-- /screen-grocery -->
+
+
+<!-- ── BOTTOM NAV ── -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('training', this)">
+    <span class="icon">💪</span>
+    Training
+  </button>
+  <button class="tab-btn" onclick="switchTab('nutrition', this)">
+    <span class="icon">🥗</span>
+    Nutrition
+  </button>
+  <button class="tab-btn" onclick="switchTab('grocery', this)">
+    <span class="icon">🛒</span>
+    Grocery
+  </button>
+</nav>
+
+<script>
+  function switchTab(name, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function toggleDay(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function openDay(id) {
+    // Open that day card and scroll to it
+    const card = document.getElementById(id);
+    if (!card.classList.contains('open')) {
+      card.classList.add('open');
+    }
+    setTimeout(() => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+  }
+
+  function toggleRecipe(card) {
+    card.classList.toggle('open');
+  }
+
+  function switchDay(idx, btn) {
+    document.querySelectorAll('.meal-day-set').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+    document.getElementById('meal-day-' + idx).classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const jsDay = new Date().getDay();
+    const dayMap = [6, 0, 1, 2, 3, 4, 5];
+    const todayIdx = dayMap[jsDay];
+    const pills = document.querySelectorAll('.day-pill');
+    switchDay(todayIdx, pills[todayIdx]);
+  });
+
+  // ── OFFLINE CACHE ──
+  // Registers a service worker that caches this page + all exercise GIFs.
+  // Visit once while the server is running → works forever with no server.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Workout guide: offline cache active'))
+      .catch(e => console.warn('SW registration failed:', e.message));
+  }
+</script>
+</body>
+</html>
