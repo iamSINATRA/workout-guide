@@ -728,6 +728,42 @@
 
   .grocery-item span { font-size: 15px; color: var(--text); line-height: 1.3; }
 
+  /* ── EXERCISE CHECKBOX ── */
+  .ex-check-btn {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--muted);
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    transition: background 0.15s, border-color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    margin-left: auto;
+    padding: 0;
+  }
+
+  .ex-check-btn.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .ex-check-btn.checked::after {
+    content: '✓';
+    font-size: 14px;
+    color: #000;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  .ex-card.done {
+    opacity: 0.38;
+  }
+
   /* ── UTILITY ── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
@@ -2212,12 +2248,53 @@
     if (btn) btn.classList.add('active');
   }
 
+  // ── EXERCISE CHECKBOXES (daily reset) ──
+  const EX_KEY = 'workout_checks_' + new Date().toISOString().slice(0, 10);
+
+  // Purge stale days
+  Object.keys(localStorage).forEach(k => {
+    if (k.startsWith('workout_checks_') && k !== EX_KEY) localStorage.removeItem(k);
+  });
+
+  function getChecked() {
+    try { return JSON.parse(localStorage.getItem(EX_KEY) || '[]'); } catch { return []; }
+  }
+
+  function toggleExercise(exId, card, btn) {
+    const list = getChecked();
+    const i = list.indexOf(exId);
+    if (i === -1) list.push(exId); else list.splice(i, 1);
+    localStorage.setItem(EX_KEY, JSON.stringify(list));
+    setExState(card, btn, list.includes(exId));
+  }
+
+  function setExState(card, btn, done) {
+    card.classList.toggle('done', done);
+    btn.classList.toggle('checked', done);
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
+    // Nutrition day pill init
     const jsDay = new Date().getDay();
     const dayMap = [6, 0, 1, 2, 3, 4, 5];
     const todayIdx = dayMap[jsDay];
     const pills = document.querySelectorAll('.day-pill');
     switchDay(todayIdx, pills[todayIdx]);
+
+    // Inject exercise checkboxes
+    const checked = getChecked();
+    document.querySelectorAll('.day-card').forEach(dayCard => {
+      const dayId = dayCard.id;
+      dayCard.querySelectorAll('.ex-card').forEach((card, i) => {
+        const exId = dayId + '-' + i;
+        const btn = document.createElement('button');
+        btn.className = 'ex-check-btn';
+        btn.setAttribute('aria-label', 'Mark complete');
+        btn.onclick = function(e) { e.stopPropagation(); toggleExercise(exId, card, btn); };
+        card.appendChild(btn);
+        setExState(card, btn, checked.includes(exId));
+      });
+    });
   });
 
   // ── OFFLINE CACHE ──
