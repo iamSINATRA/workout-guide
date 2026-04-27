@@ -1,0 +1,238 @@
+{
+  "profile": {
+    "title": "Workout & Nutrition Guide",
+    "subtitle": "Personalized for a 55-Year-Old Male",
+    "tagline": "Back-Safe Training  |  Mediterranean Nutrition  |  16:8 Intermittent Fasting",
+    "stats": [
+      { "value": "5 Days/Week", "label": "Training Frequency" },
+      { "value": "2 Sessions",  "label": "Weekly Swim" },
+      { "value": "4 Days",      "label": "Gym Days" },
+      { "value": "16:8 IF",     "label": "Eating Window" }
+    ]
+  },
+
+  "weeklySchedule": [
+    { "day": "Monday",    "focus": "Chest + Core",               "color": "1F3864" },
+    { "day": "Tuesday",   "focus": "Legs — Quad & Glute",        "color": "1A6B4B" },
+    { "day": "Wednesday", "focus": "Swim",                        "color": "1565A0" },
+    { "day": "Thursday",  "focus": "Biceps + Shoulders + Core",   "color": "7B1F3B" },
+    { "day": "Friday",    "focus": "Legs — Posterior Chain",      "color": "5B3A8A" },
+    { "day": "Saturday",  "focus": "Swim (Longer)",               "color": "1565A0" },
+    { "day": "Sunday",    "focus": "Active Recovery",             "color": "666666" }
+  ],
+
+  "lowerBackRules": [
+    "No barbell back squats or conventional deadlifts",
+    "All dumbbell work seated or supported — never standing under load with free spine",
+    "5-minute core activation warm-up before every session: dead bug + bird-dog + glute bridge",
+    "Brace core on every rep of every exercise — treat your trunk like a lifting belt",
+    "STOP IMMEDIATELY if lower back recruits — no pushing through it. This rule saves years"
+  ],
+
+  "workoutDays": [
+    {
+      "day": "MONDAY",
+      "title": "Chest + Core",
+      "color": "1F3864",
+      "note": "Core activation warm-up (5 min) before lifting. See Section 4 for protocol.",
+      "exercises": [
+        { "name": "Incline Dumbbell Press",      "sets": "4 × 10-12",  "cue": "Controlled range, back flat to bench, no shoulder impingement",          "imgKey": "incline-dumbbell-press" },
+        { "name": "Cable Chest Fly (Low Pulley)", "sets": "3 × 12-15",  "cue": "Arms slightly bent, squeeze chest at center, constant tension",            "imgKey": "cable-chest-fly" },
+        { "name": "Machine Chest Press",          "sets": "3 × 10-12",  "cue": "Seat height so handles at mid-chest, back fully supported",                "imgKey": "machine-chest-press" },
+        { "name": "Push-Ups",                     "sets": "3 × max",    "cue": "Straight body line, don't let hips sag",                                   "imgKey": "push-up" },
+        { "name": "Dead Bug",                     "sets": "3 × 10/side","cue": "Lower back FLAT on floor the entire time — non-negotiable",                "imgKey": "dead-bug" },
+        { "name": "Forearm Plank",                "sets": "3 × 30-45s", "cue": "Neutral spine, glutes squeezed, breathe steadily",                         "imgKey": "plank" }
+      ]
+    },
+    {
+      "day": "TUESDAY",
+      "title": "Legs: Quad & Glute Focus",
+      "color": "1A6B4B",
+      "note": "Core activation warm-up (5 min) before lifting. Focus on controlled range — these muscles are being rebuilt from scratch.",
+      "exercises": [
+        { "name": "Leg Press (Machine)",   "sets": "4 × 12-15",  "cue": "Feet mid-plate shoulder-width, never let lower back peel off pad",              "imgKey": "leg-press" },
+        { "name": "Goblet Squat",          "sets": "3 × 12",     "cue": "DB at chest, sit back and down, torso upright, knees track over toes",           "imgKey": "goblet-squat" },
+        { "name": "Seated Leg Extension",  "sets": "3 × 15",     "cue": "Full range, pause at top, slow lower",                                            "imgKey": "leg-extension" },
+        { "name": "Lying Leg Curl",        "sets": "3 × 12",     "cue": "Hips stay on pad, slow eccentric",                                                "imgKey": "lying-leg-curl" },
+        { "name": "Hip Thrust (Bench)",    "sets": "3 × 15",     "cue": "Upper back on bench edge, drive through heels, squeeze glutes 1 sec at top",     "imgKey": "hip-thrust" },
+        { "name": "Standing Calf Raise",   "sets": "3 × 20",     "cue": "Heel below platform, full extension at top",                                      "imgKey": "calf-raise" }
+      ]
+    },
+    {
+      "day": "WEDNESDAY",
+      "title": "Swim",
+      "color": "1565A0",
+      "narrative": [
+        "30-45 minutes of lap swimming.",
+        "Mix freestyle and backstroke. Backstroke is particularly valuable here — it decompresses the lumbar spine and opens the thoracic region in the opposite direction from sitting. On high back-sensitivity days, use a pull buoy for the entire session to take legs out of the equation and keep all rotation gentle.",
+        "This session is cardio, active recovery, and back therapy simultaneously. Don't skip it."
+      ]
+    },
+    {
+      "day": "THURSDAY",
+      "title": "Biceps + Shoulders + Core",
+      "color": "7B1F3B",
+      "note": "Core activation warm-up (5 min). All curls are SEATED — this eliminates the temptation to swing through the lower back.",
+      "exercises": [
+        { "name": "Seated Dumbbell Curl",        "sets": "4 × 12",     "cue": "SEATED eliminates back stress, full range, don't swing",                    "imgKey": "seated-dumbbell-curl" },
+        { "name": "Cable Hammer Curl",           "sets": "3 × 12",     "cue": "Neutral grip, elbows pinned at sides",                                       "imgKey": "cable-hammer-curl" },
+        { "name": "Machine Preacher Curl",       "sets": "3 × 10-12",  "cue": "Arms fully supported, don't hyperextend at bottom",                          "imgKey": "preacher-curl" },
+        { "name": "Seated Lateral Raise (Light)","sets": "3 × 15",     "cue": "Lead with elbows, raise to shoulder height only",                            "imgKey": "seated-lateral-raise" },
+        { "name": "Cable Face Pull",             "sets": "3 × 15",     "cue": "Cable at face height, elbows FLARED HIGH AND WIDE — this is not a row",      "imgKey": "cable-face-pull" },
+        { "name": "Bird-Dog",                    "sets": "3 × 10/side","cue": "Opposite arm and leg, spine neutral, hold 2 sec, no rotation",               "imgKey": "bird-dog" }
+      ]
+    },
+    {
+      "day": "FRIDAY",
+      "title": "Legs: Posterior Chain & Hinge",
+      "color": "5B3A8A",
+      "note": "Core activation warm-up (5 min). The Romanian Deadlift is included but keep weights LIGHT — this is a hinge pattern, not a strength test. Technique first, always.",
+      "exercises": [
+        { "name": "Romanian Deadlift (Light DBs)", "sets": "3 × 10",     "cue": "Hinge at HIPS not waist, DBs close to legs, stop at hamstring stretch",   "imgKey": "romanian-deadlift" },
+        { "name": "Step-Ups (Box or Bench)",       "sets": "3 × 12/leg", "cue": "Drive through heel of elevated foot, don't push off back foot",            "imgKey": "step-up" },
+        { "name": "Reverse Lunge",                 "sets": "3 × 10/leg", "cue": "Step BACK, front knee tracks over toes, torso upright",                    "imgKey": "reverse-lunge" },
+        { "name": "Seated Leg Curl",               "sets": "3 × 15",     "cue": "Full range, pause at full flexion, controlled return",                      "imgKey": "seated-leg-curl" },
+        { "name": "Glute Bridge (Bodyweight)",     "sets": "3 × 20",     "cue": "Feet flat, drive hips up, squeeze glutes 1 full second at top",             "imgKey": "glute-bridge" }
+      ]
+    },
+    {
+      "day": "SATURDAY",
+      "title": "Swim (Longer Session)",
+      "color": "1565A0",
+      "narrative": [
+        "45-60 minutes. Kick sets, pull buoy intervals, or technique drills. Use this session to work on breathing rhythm and stroke mechanics if desired. Consider water aerobics or aqua jogging for variety while staying gentle on the spine."
+      ]
+    },
+    {
+      "day": "SUNDAY",
+      "title": "Active Recovery",
+      "color": "666666",
+      "narrative": [
+        "20-30 minute walk, light stretching, or yoga. Focus on hip flexors, hamstrings, and thoracic rotation. This is not a rest day in the sedentary sense — it's active recovery. Move, but don't load."
+      ]
+    }
+  ],
+
+  "nutrition": {
+    "eatingWindow": "12:00 PM – 8:00 PM  (16:8 Intermittent Fasting)",
+    "fastingNote": "The 16-hour fast leverages overnight hormone shifts — growth hormone peaks during the fast, and insulin stays low. Breaking the fast at noon keeps the morning productive and simplifies meal timing around training.",
+    "macros": [
+      { "value": "170g+", "label": "Protein / day" },
+      { "value": "<80g",  "label": "Net Carbs / day" },
+      { "value": "35g+",  "label": "Fiber / day" },
+      { "value": "<25g",  "label": "Added Sugar / day" }
+    ],
+    "meals": [
+      {
+        "name": "Meal 1 — 12:00 PM (Break Fast)",
+        "items": [
+          "4-5 egg whites + 1-2 whole eggs, scrambled in olive oil",
+          "1 avocado, sliced — DAILY NON-NEGOTIABLE. Do not remove this.",
+          "Cherry tomatoes + cucumber",
+          "Olive oil, lemon juice, fresh herbs"
+        ]
+      },
+      {
+        "name": "Meal 2 — 3:00 PM",
+        "items": [
+          "6-8 oz grilled chicken, salmon, shrimp, or canned tuna",
+          "Large salad: arugula, spinach, olives, roasted peppers, red onion",
+          "Dressing: olive oil + red wine vinegar + Dijon mustard",
+          "Optional: 1/4 cup chickpeas for extra fiber"
+        ]
+      },
+      {
+        "name": "Meal 3 — 6:30–7:30 PM (Largest Meal)",
+        "items": [
+          "8 oz protein: salmon, sea bass, chicken thigh, lean ground turkey, or shrimp",
+          "Roasted vegetables: broccoli, asparagus, zucchini, eggplant, or cauliflower",
+          "Training days only: lentils, white beans, or 1/2 cup quinoa as a carb source",
+          "Olive oil as cooking fat throughout"
+        ]
+      },
+      {
+        "name": "Snacks (Between Meals, If Needed)",
+        "items": [
+          "Plain full-fat Greek yogurt + blueberries or strawberries",
+          "Hard-boiled eggs (2-3)",
+          "String cheese + almonds or walnuts",
+          "Protein shake — whey or casein, <5g sugar per serving"
+        ]
+      }
+    ],
+    "rules": [
+      "Avocado: 1 daily — full stop. Healthy fats + fiber + satiety, no debate.",
+      "AVOID: white bread, pasta, regular rice, fruit juice, cream-based sauces, fried food",
+      "Water: 80-100 oz minimum daily — track it",
+      "Electrolyte packet (zero sugar — LMNT or Liquid IV Zero) daily during the fast",
+      "Coffee and green tea are fine during the fast — no cream or sugar"
+    ]
+  },
+
+  "backSafety": {
+    "preWorkout": [
+      { "name": "Dead Bug",     "sets": "2 × 10/side", "note": "Lower back flat on floor — always" },
+      { "name": "Bird-Dog",     "sets": "2 × 8/side",  "note": "Hold 2 seconds, spine neutral" },
+      { "name": "Glute Bridge", "sets": "2 × 15",      "note": "Squeeze glutes at top, pause" }
+    ],
+    "postWorkout": [
+      { "name": "Hip Flexor Stretch",            "duration": "45 sec/side", "notes": "Lunge position, sink hips forward" },
+      { "name": "Piriformis Stretch (Figure-4)", "duration": "45 sec/side", "notes": "Lying on back, cross ankle over opposite knee" },
+      { "name": "Child's Pose",                  "duration": "60 seconds",  "notes": "Arms extended, breathe into low back" },
+      { "name": "Cat-Cow",                       "duration": "10 reps",     "notes": "Slow and controlled, full range" }
+    ]
+  },
+
+  "groceryList": {
+    "PROTEINS": [
+      "Chicken breast (2-3 lbs) — boneless skinless, buy in bulk",
+      "Salmon fillets (1.5-2 lbs) — wild-caught preferred",
+      "Shrimp (1 lb, raw, peeled)",
+      "Canned tuna in olive oil (4-6 cans)",
+      "Lean ground turkey (1 lb)",
+      "Eggs (2 dozen)",
+      "Greek yogurt, plain full-fat (32 oz tub)",
+      "Whey or casein protein powder (<5g sugar/serving)",
+      "String cheese or part-skim mozzarella"
+    ],
+    "PRODUCE": [
+      "Avocados (7-10) — one per day",
+      "Baby spinach (large bag)",
+      "Arugula (bag)",
+      "Cherry tomatoes (2 pints)",
+      "English cucumber (2)",
+      "Broccoli (2 heads or bag of florets)",
+      "Asparagus (2 bundles)",
+      "Zucchini (3-4)",
+      "Eggplant (1-2)",
+      "Red onion (2)",
+      "Garlic (1 head)",
+      "Lemons (4-6)",
+      "Blueberries or strawberries (1-2 pints)",
+      "Cauliflower (1 head)"
+    ],
+    "PANTRY / FATS / OILS": [
+      "Extra virgin olive oil (large bottle)",
+      "Kalamata olives (jar)",
+      "Raw almonds or walnuts (bag)",
+      "Red wine vinegar",
+      "Dijon mustard",
+      "Canned chickpeas (3-4 cans)",
+      "Canned white beans (2-3 cans)",
+      "Quinoa (small bag — training days only)",
+      "Roasted red peppers (jar)"
+    ],
+    "HERBS & SPICES": [
+      "Sea salt + black pepper",
+      "Dried oregano, thyme, rosemary",
+      "Smoked paprika",
+      "Cumin",
+      "Fresh parsley or basil (bunch)"
+    ],
+    "HYDRATION / ELECTROLYTES": [
+      "Electrolyte packets, no sugar (LMNT or Liquid IV Zero)",
+      "Sparkling water (case)",
+      "Black coffee or green tea"
+    ]
+  }
+}
